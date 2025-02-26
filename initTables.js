@@ -1,10 +1,7 @@
-// initTables.js
-const db = require('./db');
+const db = require("./db");
 
 async function initTables() {
  try {
-
-  // Users table
   await db.query(`
    CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
@@ -14,7 +11,6 @@ async function initTables() {
    );
   `);
 
-  // Categories table
   await db.query(`
    CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
@@ -22,7 +18,6 @@ async function initTables() {
    );
   `);
 
-  // Videos table with uploaded_by reference
   await db.query(`
    CREATE TABLE IF NOT EXISTS videos (
     id SERIAL PRIMARY KEY,
@@ -30,6 +25,7 @@ async function initTables() {
     description TEXT NOT NULL,
     category_id INTEGER,
     filename TEXT NOT NULL,
+    subtitle_filename TEXT,  -- New column for subtitle file
     tags JSONB,
     uploaded_by INTEGER REFERENCES users(id),
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
