@@ -1,7 +1,20 @@
+// initTables.js
 const db = require('./db');
 
 async function initTables() {
  try {
+
+  // Users table
+  await db.query(`
+   CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    username TEXT NOT NULL UNIQUE,
+    password TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+   );
+  `);
+
+  // Categories table
   await db.query(`
    CREATE TABLE IF NOT EXISTS categories (
     id SERIAL PRIMARY KEY,
@@ -9,6 +22,7 @@ async function initTables() {
    );
   `);
 
+  // Videos table with uploaded_by reference
   await db.query(`
    CREATE TABLE IF NOT EXISTS videos (
     id SERIAL PRIMARY KEY,
@@ -16,17 +30,10 @@ async function initTables() {
     description TEXT NOT NULL,
     category_id INTEGER,
     filename TEXT NOT NULL,
-    tags JSONB
+    tags JSONB,
+    uploaded_by INTEGER REFERENCES users(id),
+    FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE
    );
-  `);
-
-  await db.query(`
-   ALTER TABLE videos
-   DROP CONSTRAINT IF EXISTS videos_category_id_fkey;
-
-   ALTER TABLE videos
-   ADD CONSTRAINT videos_category_id_fkey
-   FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE CASCADE;
   `);
 
   console.log("Tables created successfully!");
